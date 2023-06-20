@@ -78,13 +78,13 @@ const loop = (arr, callback, batch) => {
   return new Promise((resolve) => {
     let i = 0;
 
-    const execute = () => {
+    const execute = async () => {
       if (i < arr.length - batch) {
         setImmediate(execute); // Schedule next batch onto task queue
       }
 
       for (let j = i; j < i + batch && j < arr.length; j++) {
-        callback(arr[j]);
+        await callback(arr[j]);
       }
 
       i += batch;
