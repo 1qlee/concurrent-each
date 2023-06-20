@@ -65,6 +65,41 @@ const forEach = (arr, callback, batch) => {
 };
 
 /**
+ * @param {Array} arr
+ * @param {Function} callback
+ * @param {Number} [batch] Batch size
+ */
+const loop = (arr, callback, batch) => {
+  // If no batch set then default to 1000 operations
+  if (!batch) {
+    batch = Math.ceil(arr.length / 1000);
+  }
+
+  return new Promise((resolve) => {
+    let i = 0;
+
+    const execute = () => {
+      if (i < arr.length - batch) {
+        setImmediate(execute); // Schedule next batch onto task queue
+      }
+
+      for (let j = i; j < i + batch && j < arr.length; j++) {
+        callback(arr[j]);
+      }
+
+      i += batch;
+
+      if (i >= arr.length) {
+        resolve();
+      }
+    };
+
+    setImmediate(execute); // First batch
+  });
+};
+
+
+/**
  * @param {*} arr
  * @param {*} reducer
  * @param {*} initialValue
