@@ -75,7 +75,7 @@ const loop = (arr, callback, batch) => {
     batch = Math.ceil(arr.length / 1000);
   }
 
-  return new Promise((resolve) => {
+  return new Promise(async (resolve) => {
     let i = 0;
 
     const execute = async () => {
