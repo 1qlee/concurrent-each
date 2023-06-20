@@ -138,4 +138,5 @@ module.exports = {
   map,
   forEach,
   reduce,
+  loop
 };
