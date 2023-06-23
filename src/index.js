@@ -75,15 +75,27 @@ const loop = (arr, callback, batch) => {
     batch = Math.ceil(arr.length / 1000);
   }
 
+  let shouldExit = false; // External flag to control loop exit
+
+  const exit = () => {
+    shouldExit = true;
+  };
+
   return new Promise(async (resolve) => {
     let i = 0;
 
     const execute = async () => {
-      if (i < arr.length - batch) {
+      if (i < arr.length - batch && !shouldExit) {
         setImmediate(execute); // Schedule next batch onto task queue
       }
 
       for (let j = i; j < i + batch && j < arr.length; j++) {
+        if (shouldExit) {
+          // Exit the loop if the external flag is set
+          resolve();
+          return;
+        }
+
         await callback(arr[j]);
       }
 
@@ -95,6 +107,9 @@ const loop = (arr, callback, batch) => {
     };
 
     setImmediate(execute); // First batch
+
+    // Expose the exit method
+    loop.exit = exit;
   });
 };
 
